@@ -21,9 +21,9 @@ LOG2_COLOR = (0, 0, 255)  # Blue color for Player 2's moves
 BOTH_COLOR = (128, 0, 128)  # Purple
 WALLS_COLOR = (0, 0, 0)  # White color for the frame
 
-pygame.init()
-window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-pygame.display.set_caption("Quoridor Game")
+#pygame.init()
+#window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+#pygame.display.set_caption("Quoridor Game")
 
 from P1 import *
 from P2 import *

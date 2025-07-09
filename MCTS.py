@@ -1,4 +1,6 @@
 import copy
+import time
+
 import numpy as np
 from collections import defaultdict
 from quoridor_state import QuoridorState
@@ -139,40 +141,43 @@ class MonteCarloTreeSearchNode():
     
 #Return the best move to play
     def best_action(self):
-        simulation_no = 2 #number of simulation
+        simulation_no = 200 #number of simulation
         global mcts_moves
         
         
         for i in range(simulation_no):
             
             v = self._tree_policy()
-            print("Action qui a menée à là où nous en sommes de nos jours : ",v.parent_action)
+            #print("Action qui a menée à là où nous en sommes de nos jours : ",v.parent_action)
 
             reward = v.rollout()
             v.backpropagate(reward)
 
-            #Print le deroulement du rollout
+           # #Print le deroulement du rollout
             print("Rollout n°", i, " : ")
             print(mcts_moves[0])
             print(mcts_moves[1])
             print("\n")
             mcts_moves = ([], [])
         return self.best_child(c_param=0.)
-    
+
+
+
 
 if __name__ == "__main__":
+    start = time.perf_counter()
 
     game = Quoridor(5)
-    #game.place_wall(("H",1,2))
-    #game.place_wall(("H",2,3))
-    #game.setPos((2,2),(0,0),0)
-    root = MonteCarloTreeSearchNode(state = QuoridorState(game))
+    #game.place_wall(("H", 1, 2))
+    #game.place_wall(("H", 2, 3))
+    # game.setPos((2, 2), (0, 0), 0)
+
+    root = MonteCarloTreeSearchNode(state=QuoridorState(game))
     selected_node = root.best_action()
 
-    #print(selected_node.getState())
-    #game.print_board()
-    
-
+    print("Best move:", selected_node.getState())
+    print("Time:", time.perf_counter() - start)
+    # game.print_board()
 
 
 
