@@ -1,4 +1,7 @@
 import heapq
+
+import pygame
+
 from Q20 import Quoridor
 from quoridor_state import QuoridorState
 
@@ -53,6 +56,10 @@ def a_star(state : QuoridorState, start, goal):
 
     return None  # No path found
 
+
+
+
+
 if __name__ == "__main__":
     grid = [
         [False, 0, 0, 0, 1],
@@ -79,3 +86,17 @@ if __name__ == "__main__":
             print(p)
     else:
         print("Aucun chemin trouvé.")
+
+    running = True
+    clock = pygame.time.Clock()
+
+    while running:
+        clock.tick(30)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+        game.draw_board()
+        game.show_a_star_path(path)
+        game.draw_log()
+        pygame.display.update()

@@ -20,10 +20,10 @@ LOG_COLOR = (255, 0, 0)  # Red color for Player 1's moves
 LOG2_COLOR = (0, 0, 255)  # Blue color for Player 2's moves
 BOTH_COLOR = (128, 0, 128)  # Purple
 WALLS_COLOR = (0, 0, 0)  # White color for the frame
-if __name__ == "__main__":
-    pygame.init()
-    window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-    pygame.display.set_caption("Quoridor Game")
+
+pygame.init()
+window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+pygame.display.set_caption("Quoridor Game")
 
 from P1 import *
 from P2 import *
@@ -47,6 +47,35 @@ class Quoridor:
         self.game_over = False  # Add a game_over attribute to track the end of the game
 
 #debug functions :
+    def show_a_star_path(self, positions):
+        from a_star import a_star  # Or wherever your a_star function is defined
+
+        path = positions
+
+        if not path:
+            print("Aucun chemin trouvé par A*.")
+            return
+
+        cell_size = WIDTH // self.board_size
+        font = pygame.font.SysFont(None, 24)  # Choisis la taille selon ton besoin
+
+        for i, node in enumerate(path):
+            row, col = node
+            x = FRAME_SIZE + col * cell_size
+            y = FRAME_SIZE + row * cell_size
+
+            # --- 1. Créer une surface avec transparence ---
+            transparent_surface = pygame.Surface((cell_size - 20, cell_size - 20), pygame.SRCALPHA)
+            transparent_surface.fill((0, 255, 0, 120))  # Vert avec alpha 120 (0=transparent, 255=opaque)
+            window.blit(transparent_surface, (x + 10, y + 10))
+
+            # --- 2. Afficher le numéro de l'étape ---
+            text = font.render(str(i), True, (0, 0, 0))  # Texte noir
+            text_rect = text.get_rect(center=(x + cell_size // 2, y + cell_size // 2))
+            window.blit(text, text_rect)
+
+
+
     def setPos(self,p1,p2,ply):
         self.player_positions["P1"] = p1
         self.player_positions["P2"] = p2
@@ -161,7 +190,7 @@ class Quoridor:
                     #print("neighbor already visited", neighbor)
                     continue
 
-                
+
                 if neighbor == start_position or (neighbor[0] >= 0 and neighbor[0] < self.board_size and neighbor[1] >= 0 and neighbor[1] < self.board_size):
                     #print("in bounds")
                     if direction == (0, -1):
@@ -202,12 +231,12 @@ class Quoridor:
                         direction = (1, 0)
                     elif last_move == ('U',):
                         direction = (-1, 0)
-                    
+
                     if direction:
                         current = (current[0] - direction[0], current[1] - direction[1])
             #print("current, start_position", current, start_position)
 
-        #print("out of while")    
+        #print("out of while")
         return path
 
     def move_player(self, move):
@@ -232,7 +261,7 @@ class Quoridor:
                 #print(f"Player {current_player} wins!")
                 self.move_log.append((current_player, f"Player {current_player} wins!"))
                 self.game_over = True
-            
+
         self.ply = (self.ply + 1) % 2
         self.previous_board = [row[:] for row in self.board]  # Save the current board state
 
@@ -242,30 +271,30 @@ class Quoridor:
         previous = self.board[center_row][center_col], self.board[center_row][center_col + 1], self.board[center_row + 1][center_col]
 
         if wall_type == 'H':
-            
+
             if self.board[center_row][center_col] == False:
                 self.board[center_row][center_col] = 'HH'
             elif self.board[center_row][center_col] == "V":
                 self.board[center_row][center_col] = 'HV'
             elif self.board[center_row][center_col] == "VV":
                 self.board[center_row][center_col] = 'HV'
-                
+
             if self.board[center_row][center_col + 1] == False:
                 self.board[center_row][center_col + 1] = 'H'
             elif self.board[center_row][center_col + 1] == "V":
                 self.board[center_row][center_col + 1] = 'HV'
             elif self.board[center_row][center_col + 1] == "VV":
                 self.board[center_row][center_col + 1] = 'HV'
-                
+
         elif wall_type == 'V':
-            
+
             if self.board[center_row][center_col] == False:
                 self.board[center_row][center_col] = 'VV'
             elif self.board[center_row][center_col] == "H":
                 self.board[center_row][center_col] = 'HV'
             elif self.board[center_row][center_col] == "HH":
                 self.board[center_row][center_col] = 'HV'
-                
+
             if self.board[center_row + 1][center_col] == False:
                 self.board[center_row + 1][center_col] = 'V'
             elif self.board[center_row + 1][center_col] == "H":
@@ -281,12 +310,12 @@ class Quoridor:
 
         self.board[center_row][center_col], self.board[center_row][center_col + 1], self.board[center_row + 1][center_col] = previous
 
-                
+
 
     def place_wall(self, move):
 
         self.update_board_wall(move)
-                
+
         current_player = self.players[self.ply]
         self.previous_player_positions[current_player] = self.player_positions[current_player]  # Store the previous player position
         self.walls[current_player] -= 1
@@ -297,7 +326,7 @@ class Quoridor:
 
 
     def place_random_wall(self):
-       
+
         legal_moves = self.get_legal_moves()
         #return(('D',))
 
@@ -311,13 +340,13 @@ class Quoridor:
 
 
         print("W",wall_moves)
-        
+
         move = random.choice(wall_moves)
         self.update_board_wall(move)
         self.previous_board = [row[:] for row in self.board]  # Save the current board state
 
 
-        
+
 
     def undo_move(self):
         # Restore the player positions to the previous state
@@ -326,7 +355,7 @@ class Quoridor:
         self.player_positions['P2'] = previous_positions['P2']
         self.previous_player_positions = {'P1': None, 'P2': None}  # Reset the previous player positions
 
-        
+
         # Restore the board to the previous state
         self.board = [row[:] for row in self.previous_board]
         self.previous_board = None
@@ -337,7 +366,7 @@ class Quoridor:
         # Redraw the board to reflect the restored state
         self.draw_board()
 
-        
+
     def draw_board(self):
         window.fill(FRAME_COLOR)
         pygame.draw.rect(window, BOARD_COLOR, (FRAME_SIZE, FRAME_SIZE, WIDTH, HEIGHT))

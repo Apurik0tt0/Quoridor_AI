@@ -5,6 +5,8 @@ from quoridor_state import QuoridorState
 from a_star import a_star
 from Q20 import Quoridor
 
+mcts_moves = ([], [])
+
 
 class MonteCarloTreeSearchNode():
     def __init__(self, state: QuoridorState, parent=None, parent_action=None):
@@ -55,7 +57,7 @@ class MonteCarloTreeSearchNode():
     def is_terminal_node(self):
         return self.state.is_game_over()
 
-#plays a game until 1 person win or tie (-1 loss | 0 tie | 1 win)
+#plays a game until 1 person win or tie (-1 loss |  1 win)
 #here we need to define the rollout policy wich is the way of chosing moves at each turn
     def rollout(self):
         current_state = copy.deepcopy(self.state)  # only one copy here
@@ -63,6 +65,9 @@ class MonteCarloTreeSearchNode():
         while not current_state.is_game_over():
             possible_moves = current_state.get_legal_actions()
             action = self.rollout_policy(current_state,possible_moves)
+
+            pos, ply = current_state.game.getPosPlayer()
+            mcts_moves[ply].append(action)
             current_state.move_inplace(action)  
         #print(current_state.game.getPosPlayer(ply=1))
         return current_state.game_result()
@@ -90,7 +95,7 @@ class MonteCarloTreeSearchNode():
     def rollout_policy(self,state: QuoridorState, possible_moves):
         #return possible_moves[np.random.randint(len(possible_moves))]
         pos, ply = state.game.getPosPlayer()
-        objectif = (2, 0) if ply == 0 else (4, 2)
+        objectif = (0, 2) if ply == 0 else (4, 2)
 
         path = a_star(state, pos, objectif)
 
@@ -134,15 +139,24 @@ class MonteCarloTreeSearchNode():
     
 #Return the best move to play
     def best_action(self):
-        simulation_no = 50 #number of simulation 
+        simulation_no = 2 #number of simulation
+        global mcts_moves
         
         
         for i in range(simulation_no):
             
             v = self._tree_policy()
+            print("Action qui a menée à là où nous en sommes de nos jours : ",v.parent_action)
+
             reward = v.rollout()
             v.backpropagate(reward)
-        
+
+            #Print le deroulement du rollout
+            print("Rollout n°", i, " : ")
+            print(mcts_moves[0])
+            print(mcts_moves[1])
+            print("\n")
+            mcts_moves = ([], [])
         return self.best_child(c_param=0.)
     
 
@@ -151,10 +165,11 @@ if __name__ == "__main__":
     game = Quoridor(5)
     #game.place_wall(("H",1,2))
     #game.place_wall(("H",2,3))
-    game.setPos((2,2),(0,0),0)
+    #game.setPos((2,2),(0,0),0)
     root = MonteCarloTreeSearchNode(state = QuoridorState(game))
     selected_node = root.best_action()
-    print(selected_node.getState())
+
+    #print(selected_node.getState())
     #game.print_board()
     
 
