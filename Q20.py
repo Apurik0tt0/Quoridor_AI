@@ -21,9 +21,9 @@ LOG2_COLOR = (0, 0, 255)  # Blue color for Player 2's moves
 BOTH_COLOR = (128, 0, 128)  # Purple
 WALLS_COLOR = (0, 0, 0)  # White color for the frame
 
-#pygame.init()
-#window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-#pygame.display.set_caption("Quoridor Game")
+pygame.init()
+window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+pygame.display.set_caption("Quoridor Game")
 
 from P1 import *
 from P2 import *
@@ -38,7 +38,7 @@ class Quoridor:
         self.players = ['P1', 'P2']
         self.player_positions = {'P1': (board_size - 1, board_size // 2), 'P2': (0, board_size // 2  if board_size % 2 == 1 else board_size // 2 -1)}
         self.walls = {'P1': num_walls, 'P2': num_walls}
-        self.ply = random.randint(0,1)
+        self.ply = 0#random.randint(0,1)
         self.player1_ai = Player1AI()  # Create an instance of Player1's AI
         self.player2_ai = Player2AI()  # Create an instance of Player2's AI
         self.move_log = []  # Move log to store the moves

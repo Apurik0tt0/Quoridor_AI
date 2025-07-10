@@ -46,8 +46,8 @@ if __name__ == "__main__":
                 running = False
 
         game.draw_board()
-        game.draw_log()
-        pygame.display.update()
+        #game.draw_log()
+        #pygame.display.update()
 
     input("Press any key to terminate")
     pygame.quit()
